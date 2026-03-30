@@ -1,0 +1,68 @@
+# Fata Cognita — Central Configuration
+
+data:
+  raw_dir: data/raw
+  processed_dir: data/processed
+  tensor_dir: data/tensors
+  max_seq_len: 62          # age 14-75 inclusive
+  num_life_states: 9
+  train_fraction: 0.8
+  val_fraction: 0.1
+  test_fraction: 0.1
+
+  # Synthetic data generator
+  synthetic:
+    n_individuals: 500
+    missing_rate: 0.2
+    seed: 42
+
+  # Static feature names (after one-hot encoding)
+  static_features:
+    - sex
+    - race_hispanic
+    - race_black
+    - race_other
+    - birth_year
+    - parent_education
+    - family_income_14
+    - region_northeast
+    - region_north_central
+    - region_south
+    - region_west
+    - afqt_score
+    - afqt_available
+    - cohort
+    # Extended features can be added here
+
+model:
+  latent_dim: 16
+  encoder_hidden_dims: [256, 128]
+  d_model: 128
+  nhead: 4
+  num_decoder_layers: 4
+  dim_feedforward: 512
+  dropout: 0.1
+
+training:
+  max_epochs: 200
+  batch_size: 256
+  lr: 1.0e-3
+  weight_decay: 1.0e-4
+  grad_clip_norm: 1.0
+  patience: 20
+  beta_cycles: 4
+  beta_ratio: 0.5
+  seed: 42
+  checkpoint_dir: checkpoints
+
+api:
+  host: "0.0.0.0"
+  port: 8000
+  cors_origins: ["*"]
+  model_checkpoint: checkpoints/best_model.pt
+  gmm_path: checkpoints/gmm.pkl
+  scaler_path: checkpoints/scalers.pkl
+  archetype_profiles_path: checkpoints/archetype_profiles.json
+
+dashboard:
+  api_url: "http://localhost:8000/api/v1"
