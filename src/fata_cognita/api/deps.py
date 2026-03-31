@@ -7,7 +7,6 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import torch
-from sklearn.mixture import GaussianMixture
 
 from fata_cognita.archetypes.extractor import load_gmm
 from fata_cognita.config import Config, load_config
@@ -17,6 +16,7 @@ from fata_cognita.model.vae import TrajectoryVAE
 
 if TYPE_CHECKING:
     from fastapi import Request
+    from sklearn.mixture import GaussianMixture
 
 
 class AppState:

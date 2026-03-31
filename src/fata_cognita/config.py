@@ -34,12 +34,24 @@ class DataConfig:
     train_fraction: float = 0.8
     val_fraction: float = 0.1
     test_fraction: float = 0.1
-    static_features: list[str] = field(default_factory=lambda: [
-        "sex", "race_hispanic", "race_black", "race_other",
-        "birth_year", "parent_education", "family_income_14",
-        "region_northeast", "region_north_central", "region_south", "region_west",
-        "afqt_score", "afqt_available", "cohort",
-    ])
+    static_features: list[str] = field(
+        default_factory=lambda: [
+            "sex",
+            "race_hispanic",
+            "race_black",
+            "race_other",
+            "birth_year",
+            "parent_education",
+            "family_income_14",
+            "region_northeast",
+            "region_north_central",
+            "region_south",
+            "region_west",
+            "afqt_score",
+            "afqt_available",
+            "cohort",
+        ]
+    )
     synthetic: SyntheticConfig = field(default_factory=SyntheticConfig)
 
     @property
