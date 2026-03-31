@@ -38,5 +38,18 @@ Thumbs.db
 # Jupyter
 .ipynb_checkpoints/
 
+# Coverage
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+
+# mypy / pyright
+.mypy_cache/
+.pyright/
+
+# Ruff
+.ruff_cache/
+
 # uv
 uv.lock
