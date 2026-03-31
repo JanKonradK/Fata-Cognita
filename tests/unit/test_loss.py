@@ -21,8 +21,18 @@ def test_loss_positive_for_random():
     log_var = torch.randn(4, 16)
     masks = torch.ones(4, 10, dtype=torch.bool)
 
-    result = loss_fn(logits, targets, income_pred, income_target,
-                     satis_pred, satis_target, mu, log_var, masks, beta=1.0)
+    result = loss_fn(
+        logits,
+        targets,
+        income_pred,
+        income_target,
+        satis_pred,
+        satis_target,
+        mu,
+        log_var,
+        masks,
+        beta=1.0,
+    )
 
     assert result.total.item() > 0
 
@@ -41,8 +51,18 @@ def test_kl_zero_at_prior():
     log_var = torch.zeros(2, 8)
     masks = torch.ones(2, 5, dtype=torch.bool)
 
-    result = loss_fn(logits, targets, income_pred, income_target,
-                     satis_pred, satis_target, mu, log_var, masks, beta=1.0)
+    result = loss_fn(
+        logits,
+        targets,
+        income_pred,
+        income_target,
+        satis_pred,
+        satis_target,
+        mu,
+        log_var,
+        masks,
+        beta=1.0,
+    )
 
     assert abs(result.kl.item()) < 1e-5
 
@@ -62,8 +82,18 @@ def test_mask_respected():
     log_var = torch.zeros(2, 8)
     masks = torch.zeros(2, 5, dtype=torch.bool)  # all masked
 
-    result = loss_fn(logits, targets, income_pred, income_target,
-                     satis_pred, satis_target, mu, log_var, masks, beta=0.0)
+    result = loss_fn(
+        logits,
+        targets,
+        income_pred,
+        income_target,
+        satis_pred,
+        satis_target,
+        mu,
+        log_var,
+        masks,
+        beta=0.0,
+    )
 
     # With beta=0 and all masked, reconstruction should be ~0 (just log_var terms)
     assert result.life_state_ce.item() == 0.0

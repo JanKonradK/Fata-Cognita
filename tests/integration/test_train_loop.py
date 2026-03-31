@@ -2,16 +2,18 @@
 
 from __future__ import annotations
 
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import torch
 
 from fata_cognita.config import Config
 from fata_cognita.data.dataset import create_dataloaders
-from fata_cognita.data.sequence_builder import split_by_caseid
 from fata_cognita.data.synthetic import generate_synthetic_data
 from fata_cognita.model.vae import TrajectoryVAE
 from fata_cognita.training.trainer import Trainer
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 def test_training_loss_decreases(tmp_path: Path):
@@ -55,7 +57,7 @@ def test_training_loss_decreases(tmp_path: Path):
 
     # Verify
     assert len(log.train_losses) == 3
-    assert all(not torch.isnan(torch.tensor(l)) for l in log.train_losses)
+    assert all(not torch.isnan(torch.tensor(v)) for v in log.train_losses)
 
     # Loss should generally decrease (epoch 3 < epoch 1)
     assert log.train_losses[-1] < log.train_losses[0], (

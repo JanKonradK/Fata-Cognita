@@ -13,13 +13,15 @@ def test_build_sequences_shapes():
     """Output tensors have correct shapes for the given config."""
     config = DataConfig(max_seq_len=10)
 
-    df = pd.DataFrame({
-        "caseid": [1, 1, 1, 2, 2],
-        "age": [14, 15, 16, 14, 15],
-        "life_state": [5, 5, 0, 5, 1],
-        "log_income": [7.0, 7.5, 10.0, 7.0, 9.0],
-        "satisfaction": [0.5, 0.6, 0.7, 0.4, 0.5],
-    })
+    df = pd.DataFrame(
+        {
+            "caseid": [1, 1, 1, 2, 2],
+            "age": [14, 15, 16, 14, 15],
+            "life_state": [5, 5, 0, 5, 1],
+            "log_income": [7.0, 7.5, 10.0, 7.0, 9.0],
+            "satisfaction": [0.5, 0.6, 0.7, 0.4, 0.5],
+        }
+    )
 
     result = build_sequences(df, config)
 
@@ -33,13 +35,15 @@ def test_build_sequences_alignment():
     """Values are placed at the correct age-aligned positions."""
     config = DataConfig(max_seq_len=10)
 
-    df = pd.DataFrame({
-        "caseid": [1, 1],
-        "age": [14, 16],  # age 14 → index 0, age 16 → index 2
-        "life_state": [5, 0],
-        "log_income": [7.0, 10.0],
-        "satisfaction": [0.5, 0.7],
-    })
+    df = pd.DataFrame(
+        {
+            "caseid": [1, 1],
+            "age": [14, 16],  # age 14 → index 0, age 16 → index 2
+            "life_state": [5, 0],
+            "log_income": [7.0, 10.0],
+            "satisfaction": [0.5, 0.7],
+        }
+    )
 
     result = build_sequences(df, config)
 
@@ -59,13 +63,15 @@ def test_build_sequences_padding():
     """Unobserved positions are zero-padded with False masks."""
     config = DataConfig(max_seq_len=10)
 
-    df = pd.DataFrame({
-        "caseid": [1],
-        "age": [14],
-        "life_state": [5],
-        "log_income": [7.0],
-        "satisfaction": [0.5],
-    })
+    df = pd.DataFrame(
+        {
+            "caseid": [1],
+            "age": [14],
+            "life_state": [5],
+            "log_income": [7.0],
+            "satisfaction": [0.5],
+        }
+    )
 
     result = build_sequences(df, config)
 

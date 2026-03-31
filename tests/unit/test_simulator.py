@@ -2,12 +2,16 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import torch
 
-from fata_cognita.config import Config
 from fata_cognita.data.scaler import FeatureScaler
 from fata_cognita.inference.simulator import simulate_trajectories
 from fata_cognita.model.vae import TrajectoryVAE
+
+if TYPE_CHECKING:
+    from fata_cognita.config import Config
 
 
 def test_simulation_shapes(tiny_config: Config):

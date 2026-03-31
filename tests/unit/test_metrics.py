@@ -54,11 +54,13 @@ def test_mae_value():
 def test_active_units():
     """Active units counts dimensions with variance above threshold."""
     # 4 dimensions, only first 2 have significant variance
-    mu = torch.tensor([
-        [1.0, -1.0, 0.01, 0.0],
-        [-1.0, 1.0, -0.01, 0.0],
-        [0.5, -0.5, 0.005, 0.0],
-    ])
+    mu = torch.tensor(
+        [
+            [1.0, -1.0, 0.01, 0.0],
+            [-1.0, 1.0, -0.01, 0.0],
+            [0.5, -0.5, 0.005, 0.0],
+        ]
+    )
     assert compute_active_units(mu, threshold=0.01) == 2
 
 

@@ -2,10 +2,14 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import torch
 
-from fata_cognita.config import Config
 from fata_cognita.model.decoder import TrajectoryDecoder
+
+if TYPE_CHECKING:
+    from fata_cognita.config import Config
 
 
 def test_decoder_output_shapes(tiny_config: Config):

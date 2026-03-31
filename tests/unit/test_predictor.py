@@ -2,14 +2,18 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import numpy as np
 import torch
 from sklearn.mixture import GaussianMixture
 
-from fata_cognita.config import Config
 from fata_cognita.data.scaler import FeatureScaler
 from fata_cognita.inference.predictor import predict_trajectory
 from fata_cognita.model.vae import TrajectoryVAE
+
+if TYPE_CHECKING:
+    from fata_cognita.config import Config
 
 
 def test_prediction_output(tiny_config: Config):
@@ -38,6 +42,9 @@ def test_prediction_output(tiny_config: Config):
 
     assert len(result.trajectory) == tiny_config.data.max_seq_len
     assert result.trajectory[0].age == 14
-    assert all(t.life_state in [s.name for s in __import__('fata_cognita.data.synthetic', fromlist=['LifeState']).LifeState] for t in result.trajectory)
+    from fata_cognita.data.synthetic import LifeState
+
+    valid_states = [s.name for s in LifeState]
+    assert all(t.life_state in valid_states for t in result.trajectory)
     assert len(result.latent_vector) == tiny_config.model.latent_dim
     assert isinstance(result.archetype_id, int)

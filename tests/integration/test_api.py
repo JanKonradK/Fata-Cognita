@@ -9,7 +9,7 @@ from sklearn.mixture import GaussianMixture
 
 from fata_cognita.api.deps import AppState
 from fata_cognita.api.main import create_app
-from fata_cognita.config import Config, DataConfig, ModelConfig, SyntheticConfig, TrainingConfig
+from fata_cognita.config import Config, DataConfig, ModelConfig, SyntheticConfig
 from fata_cognita.data.scaler import FeatureScaler
 from fata_cognita.model.vae import TrajectoryVAE
 
@@ -109,10 +109,13 @@ class TestPredictEndpoint:
         app = create_app(state=state)
         with TestClient(app) as client:
             features = _make_features(state.config)
-            resp = client.post("/api/v1/predict", json={
-                "static_features": features,
-                "deterministic": True,
-            })
+            resp = client.post(
+                "/api/v1/predict",
+                json={
+                    "static_features": features,
+                    "deterministic": True,
+                },
+            )
             assert resp.status_code == 200
             data = resp.json()
             assert len(data["trajectory"]) == 10
@@ -133,10 +136,13 @@ class TestSimulateEndpoint:
         app = create_app(state=state)
         with TestClient(app) as client:
             features = _make_features(state.config)
-            resp = client.post("/api/v1/simulate", json={
-                "static_features": features,
-                "n_simulations": 100,
-            })
+            resp = client.post(
+                "/api/v1/simulate",
+                json={
+                    "static_features": features,
+                    "n_simulations": 100,
+                },
+            )
             assert resp.status_code == 200
             data = resp.json()
             assert "percentile_bands" in data

@@ -2,14 +2,18 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import numpy as np
 import torch
 from sklearn.mixture import GaussianMixture
 
-from fata_cognita.config import Config
 from fata_cognita.data.scaler import FeatureScaler
 from fata_cognita.inference.sensitivity import run_sensitivity_analysis
 from fata_cognita.model.vae import TrajectoryVAE
+
+if TYPE_CHECKING:
+    from fata_cognita.config import Config
 
 
 def test_sensitivity_produces_deltas(tiny_config: Config):

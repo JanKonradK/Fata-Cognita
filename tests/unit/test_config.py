@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 
 from fata_cognita.config import Config, load_config
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 def test_default_config_loads():

@@ -16,9 +16,14 @@ from fata_cognita.data.feature_engineer import (
 def test_employed_ft():
     """Full-time employment: employed + hours >= 35."""
     state = derive_life_state(
-        employment_status=1, hours_per_week=40, class_of_worker=1,
-        enrolled_in_school=0, in_military=0, health_limitation=0,
-        age=30, in_labor_force=1,
+        employment_status=1,
+        hours_per_week=40,
+        class_of_worker=1,
+        enrolled_in_school=0,
+        in_military=0,
+        health_limitation=0,
+        age=30,
+        in_labor_force=1,
     )
     assert state == LifeState.EMPLOYED_FT
 
@@ -26,9 +31,14 @@ def test_employed_ft():
 def test_employed_pt():
     """Part-time employment: employed + hours < 35."""
     state = derive_life_state(
-        employment_status=1, hours_per_week=20, class_of_worker=1,
-        enrolled_in_school=0, in_military=0, health_limitation=0,
-        age=30, in_labor_force=1,
+        employment_status=1,
+        hours_per_week=20,
+        class_of_worker=1,
+        enrolled_in_school=0,
+        in_military=0,
+        health_limitation=0,
+        age=30,
+        in_labor_force=1,
     )
     assert state == LifeState.EMPLOYED_PT
 
@@ -36,9 +46,14 @@ def test_employed_pt():
 def test_self_employed():
     """Self-employment: class_of_worker == 3."""
     state = derive_life_state(
-        employment_status=1, hours_per_week=45, class_of_worker=3,
-        enrolled_in_school=0, in_military=0, health_limitation=0,
-        age=35, in_labor_force=1,
+        employment_status=1,
+        hours_per_week=45,
+        class_of_worker=3,
+        enrolled_in_school=0,
+        in_military=0,
+        health_limitation=0,
+        age=35,
+        in_labor_force=1,
     )
     assert state == LifeState.SELF_EMPLOYED
 
@@ -46,9 +61,14 @@ def test_self_employed():
 def test_student():
     """Student: enrolled_in_school == 1."""
     state = derive_life_state(
-        employment_status=0, hours_per_week=0, class_of_worker=None,
-        enrolled_in_school=1, in_military=0, health_limitation=0,
-        age=20, in_labor_force=0,
+        employment_status=0,
+        hours_per_week=0,
+        class_of_worker=None,
+        enrolled_in_school=1,
+        in_military=0,
+        health_limitation=0,
+        age=20,
+        in_labor_force=0,
     )
     assert state == LifeState.STUDENT
 
@@ -56,9 +76,14 @@ def test_student():
 def test_military():
     """Military takes priority."""
     state = derive_life_state(
-        employment_status=1, hours_per_week=40, class_of_worker=1,
-        enrolled_in_school=0, in_military=1, health_limitation=0,
-        age=22, in_labor_force=1,
+        employment_status=1,
+        hours_per_week=40,
+        class_of_worker=1,
+        enrolled_in_school=0,
+        in_military=1,
+        health_limitation=0,
+        age=22,
+        in_labor_force=1,
     )
     assert state == LifeState.MILITARY
 
@@ -66,9 +91,14 @@ def test_military():
 def test_retired():
     """Age >= 55 and not employed → retired."""
     state = derive_life_state(
-        employment_status=0, hours_per_week=0, class_of_worker=None,
-        enrolled_in_school=0, in_military=0, health_limitation=0,
-        age=60, in_labor_force=0,
+        employment_status=0,
+        hours_per_week=0,
+        class_of_worker=None,
+        enrolled_in_school=0,
+        in_military=0,
+        health_limitation=0,
+        age=60,
+        in_labor_force=0,
     )
     assert state == LifeState.RETIRED
 
@@ -76,9 +106,14 @@ def test_retired():
 def test_disabled():
     """Health limitation → disabled."""
     state = derive_life_state(
-        employment_status=0, hours_per_week=0, class_of_worker=None,
-        enrolled_in_school=0, in_military=0, health_limitation=1,
-        age=40, in_labor_force=0,
+        employment_status=0,
+        hours_per_week=0,
+        class_of_worker=None,
+        enrolled_in_school=0,
+        in_military=0,
+        health_limitation=1,
+        age=40,
+        in_labor_force=0,
     )
     assert state == LifeState.DISABLED
 
