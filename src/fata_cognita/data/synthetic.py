@@ -31,18 +31,21 @@ class LifeState(IntEnum):
 
 # Transition matrix: rows = from-state, cols = to-state.
 # Probabilities are age-independent defaults; age-dependent adjustments applied in code.
-_BASE_TRANSITION = np.array([
-    # FT    PT    SE    UE    OLF   STU   MIL   RET   DIS
-    [0.85, 0.04, 0.02, 0.04, 0.02, 0.01, 0.00, 0.01, 0.01],  # EMPLOYED_FT
-    [0.10, 0.65, 0.02, 0.08, 0.08, 0.04, 0.00, 0.02, 0.01],  # EMPLOYED_PT
-    [0.05, 0.03, 0.80, 0.05, 0.03, 0.01, 0.00, 0.02, 0.01],  # SELF_EMPLOYED
-    [0.25, 0.10, 0.02, 0.40, 0.15, 0.05, 0.01, 0.01, 0.01],  # UNEMPLOYED
-    [0.10, 0.10, 0.02, 0.10, 0.55, 0.05, 0.01, 0.05, 0.02],  # OUT_OF_LABOR
-    [0.30, 0.15, 0.02, 0.08, 0.05, 0.35, 0.02, 0.01, 0.02],  # STUDENT
-    [0.30, 0.05, 0.02, 0.05, 0.05, 0.03, 0.45, 0.03, 0.02],  # MILITARY
-    [0.02, 0.02, 0.01, 0.01, 0.04, 0.00, 0.00, 0.88, 0.02],  # RETIRED
-    [0.03, 0.02, 0.01, 0.02, 0.05, 0.01, 0.00, 0.02, 0.84],  # DISABLED
-], dtype=np.float64)
+_BASE_TRANSITION = np.array(
+    [
+        # FT    PT    SE    UE    OLF   STU   MIL   RET   DIS
+        [0.85, 0.04, 0.02, 0.04, 0.02, 0.01, 0.00, 0.01, 0.01],  # EMPLOYED_FT
+        [0.10, 0.65, 0.02, 0.08, 0.08, 0.04, 0.00, 0.02, 0.01],  # EMPLOYED_PT
+        [0.05, 0.03, 0.80, 0.05, 0.03, 0.01, 0.00, 0.02, 0.01],  # SELF_EMPLOYED
+        [0.25, 0.10, 0.02, 0.40, 0.15, 0.05, 0.01, 0.01, 0.01],  # UNEMPLOYED
+        [0.10, 0.10, 0.02, 0.10, 0.55, 0.05, 0.01, 0.05, 0.02],  # OUT_OF_LABOR
+        [0.30, 0.15, 0.02, 0.08, 0.05, 0.35, 0.02, 0.01, 0.02],  # STUDENT
+        [0.30, 0.05, 0.02, 0.05, 0.05, 0.03, 0.45, 0.03, 0.02],  # MILITARY
+        [0.02, 0.02, 0.01, 0.01, 0.04, 0.00, 0.00, 0.88, 0.02],  # RETIRED
+        [0.03, 0.02, 0.01, 0.02, 0.05, 0.01, 0.00, 0.02, 0.84],  # DISABLED
+    ],
+    dtype=np.float64,
+)
 
 
 def _age_adjusted_transition(age: int) -> np.ndarray:
@@ -72,9 +75,7 @@ def _age_adjusted_transition(age: int) -> np.ndarray:
     return tm
 
 
-def _income_for_state(
-    state: int, age: int, education: float, rng: np.random.Generator
-) -> float:
+def _income_for_state(state: int, age: int, education: float, rng: np.random.Generator) -> float:
     """Generate a plausible income given life state, age, and education.
 
     Args:
@@ -107,9 +108,7 @@ def _income_for_state(
     return max(0.0, base + age_effect + edu_effect + noise)
 
 
-def _satisfaction_for_state(
-    state: int, income: float, rng: np.random.Generator
-) -> float:
+def _satisfaction_for_state(state: int, income: float, rng: np.random.Generator) -> float:
     """Generate a plausible life satisfaction score.
 
     Args:

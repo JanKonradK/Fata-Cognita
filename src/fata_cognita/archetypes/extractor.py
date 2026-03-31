@@ -5,12 +5,14 @@ from __future__ import annotations
 import logging
 import pickle
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import numpy as np
 import torch
 from sklearn.mixture import GaussianMixture
 
-from fata_cognita.model.vae import TrajectoryVAE
+if TYPE_CHECKING:
+    from fata_cognita.model.vae import TrajectoryVAE
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +39,7 @@ def encode_all(
 
     with torch.no_grad():
         for i in range(0, len(static_features), batch_size):
-            batch = static_features[i:i + batch_size].to(device)
+            batch = static_features[i : i + batch_size].to(device)
             mu, _ = model.encode(batch)
             all_mu.append(mu.cpu().numpy())
 
@@ -90,9 +92,7 @@ def fit_gmm_with_bic(
     return best_gmm, k_best, bic_scores
 
 
-def assign_archetypes(
-    gmm: GaussianMixture, z: np.ndarray
-) -> tuple[np.ndarray, np.ndarray]:
+def assign_archetypes(gmm: GaussianMixture, z: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """Assign archetype labels to encoded individuals.
 
     Args:

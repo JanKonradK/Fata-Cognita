@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
-import torch
-import torch.nn.functional as F
+if TYPE_CHECKING:
+    import torch
 
 
 @dataclass
@@ -21,9 +22,7 @@ class ValidationMetrics:
     active_units: int
 
 
-def compute_accuracy(
-    logits: torch.Tensor, targets: torch.Tensor, masks: torch.Tensor
-) -> float:
+def compute_accuracy(logits: torch.Tensor, targets: torch.Tensor, masks: torch.Tensor) -> float:
     """Compute top-1 accuracy on masked positions.
 
     Args:
@@ -85,9 +84,7 @@ def compute_f1_macro(
     return f1_sum / max(n_classes_present, 1)
 
 
-def compute_mae(
-    pred: torch.Tensor, target: torch.Tensor, masks: torch.Tensor
-) -> float:
+def compute_mae(pred: torch.Tensor, target: torch.Tensor, masks: torch.Tensor) -> float:
     """Compute mean absolute error on masked positions.
 
     Args:

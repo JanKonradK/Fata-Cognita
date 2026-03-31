@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 import numpy as np
 import torch
 
-from fata_cognita.model.vae import TrajectoryVAE
+if TYPE_CHECKING:
+    from fata_cognita.model.vae import TrajectoryVAE
 
 
 @dataclass
@@ -78,14 +80,16 @@ def profile_archetypes(
             "satisfaction": out["satisfaction"][0].cpu().tolist(),
         }
 
-        profiles.append(ArchetypeProfile(
-            archetype_id=int(aid),
-            prevalence=count / n_total,
-            member_count=count,
-            feature_means=means,
-            feature_stds=stds,
-            canonical_trajectory=canonical,
-            cohens_d=cohens,
-        ))
+        profiles.append(
+            ArchetypeProfile(
+                archetype_id=int(aid),
+                prevalence=count / n_total,
+                member_count=count,
+                feature_means=means,
+                feature_stds=stds,
+                canonical_trajectory=canonical,
+                cohens_d=cohens,
+            )
+        )
 
     return profiles

@@ -29,20 +29,24 @@ def list_archetypes(request: Request) -> ArchetypeListResponse:
         states = traj.get("life_states", [])
         if states:
             from collections import Counter
+
             dominant = Counter(states).most_common(1)[0][0]
             from fata_cognita.data.synthetic import LifeState
+
             dominant_name = LifeState(dominant).name
         else:
             dominant_name = "UNKNOWN"
 
-        summaries.append(ArchetypeSummary(
-            id=p["archetype_id"],
-            prevalence=p["prevalence"],
-            member_count=p["member_count"],
-            demographic_profile=p.get("feature_means", {}),
-            median_peak_income=peak_income,
-            dominant_life_state=dominant_name,
-        ))
+        summaries.append(
+            ArchetypeSummary(
+                id=p["archetype_id"],
+                prevalence=p["prevalence"],
+                member_count=p["member_count"],
+                demographic_profile=p.get("feature_means", {}),
+                median_peak_income=peak_income,
+                dominant_life_state=dominant_name,
+            )
+        )
 
     return ArchetypeListResponse(
         archetypes=summaries,
@@ -73,13 +77,15 @@ def archetype_trajectory(archetype_id: int, request: Request) -> ArchetypeTrajec
     trajectory_points = []
     for t in range(len(traj["income"])):
         state_idx = traj["life_states"][t]
-        trajectory_points.append(TrajectoryPointSchema(
-            age=min_age + t,
-            life_state=LifeState(state_idx).name,
-            life_state_probs={},
-            income=traj["income"][t],
-            satisfaction=traj["satisfaction"][t],
-        ))
+        trajectory_points.append(
+            TrajectoryPointSchema(
+                age=min_age + t,
+                life_state=LifeState(state_idx).name,
+                life_state_probs={},
+                income=traj["income"][t],
+                satisfaction=traj["satisfaction"][t],
+            )
+        )
 
     return ArchetypeTrajectoryResponse(
         archetype_id=archetype_id,

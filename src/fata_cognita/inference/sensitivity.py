@@ -10,7 +10,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from fata_cognita.inference.simulator import SimulationResult, simulate_trajectories
+from fata_cognita.inference.simulator import simulate_trajectories
 
 
 @dataclass
@@ -103,11 +103,13 @@ def run_sensitivity_analysis(
     for i, age in enumerate(base_sim.ages):
         delta_inc = pert_income_p50[i] - base_income_p50[i]
         delta_sat = pert_satis_p50[i] - base_satis_p50[i]
-        deltas.append({
-            "age": age,
-            "delta_income": delta_inc,
-            "delta_satisfaction": delta_sat,
-        })
+        deltas.append(
+            {
+                "age": age,
+                "delta_income": delta_inc,
+                "delta_satisfaction": delta_sat,
+            }
+        )
 
     # Identify inflection points: top 3 ages by absolute income delta
     income_deltas = np.array([d["delta_income"] for d in deltas])
@@ -117,18 +119,21 @@ def run_sensitivity_analysis(
     inflection_points = []
     for idx in top_indices:
         if abs_deltas[idx] > 0:
-            inflection_points.append(InflectionPoint(
-                age=base_sim.ages[idx],
-                delta_income=deltas[idx]["delta_income"],
-                delta_satisfaction=deltas[idx]["delta_satisfaction"],
-                significance=float(abs_deltas[idx] / (abs_deltas.std() + 1e-8)),
-            ))
+            inflection_points.append(
+                InflectionPoint(
+                    age=base_sim.ages[idx],
+                    delta_income=deltas[idx]["delta_income"],
+                    delta_satisfaction=deltas[idx]["delta_satisfaction"],
+                    significance=float(abs_deltas[idx] / (abs_deltas.std() + 1e-8)),
+                )
+            )
 
     # Overall effect size: mean absolute income delta
     overall_effect = float(abs_deltas.mean())
 
     # Archetype assignments
     import torch
+
     x_base = torch.tensor(
         [[static_features.get(n, 0.0) for n in feature_names]], dtype=torch.float32
     )

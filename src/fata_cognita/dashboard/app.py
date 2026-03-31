@@ -40,26 +40,71 @@ def _get_feature_inputs() -> dict[str, float]:
     st.sidebar.header("Person Features")
     features: dict[str, float] = {}
 
-    features["sex"] = st.sidebar.selectbox("Sex", [0.0, 1.0], format_func=lambda x: "Female" if x == 0 else "Male")
+    def _sex_label(x: float) -> str:
+        return "Female" if x == 0 else "Male"
 
-    race_sel = st.sidebar.selectbox("Race/Ethnicity", ["Non-Hispanic/Non-Black", "Hispanic", "Black"])
+    features["sex"] = st.sidebar.selectbox(
+        "Sex",
+        [0.0, 1.0],
+        format_func=_sex_label,
+    )
+
+    race_sel = st.sidebar.selectbox(
+        "Race/Ethnicity",
+        ["Non-Hispanic/Non-Black", "Hispanic", "Black"],
+    )
     features["race_hispanic"] = 1.0 if race_sel == "Hispanic" else 0.0
     features["race_black"] = 1.0 if race_sel == "Black" else 0.0
     features["race_other"] = 1.0 if race_sel == "Non-Hispanic/Non-Black" else 0.0
 
-    features["birth_year"] = st.sidebar.slider("Birth Year (normalized)", -2.0, 2.0, 0.0, 0.1)
-    features["parent_education"] = st.sidebar.slider("Parent Education (normalized)", -2.0, 2.0, 0.0, 0.1)
-    features["family_income_14"] = st.sidebar.slider("Family Income at 14 (normalized)", -2.0, 2.0, 0.0, 0.1)
+    features["birth_year"] = st.sidebar.slider(
+        "Birth Year (normalized)",
+        -2.0,
+        2.0,
+        0.0,
+        0.1,
+    )
+    features["parent_education"] = st.sidebar.slider(
+        "Parent Education (normalized)",
+        -2.0,
+        2.0,
+        0.0,
+        0.1,
+    )
+    features["family_income_14"] = st.sidebar.slider(
+        "Family Income at 14 (normalized)",
+        -2.0,
+        2.0,
+        0.0,
+        0.1,
+    )
 
-    region = st.sidebar.selectbox("Region at 14", ["Northeast", "North Central", "South", "West"])
+    region = st.sidebar.selectbox(
+        "Region at 14",
+        ["Northeast", "North Central", "South", "West"],
+    )
     features["region_northeast"] = 1.0 if region == "Northeast" else 0.0
     features["region_north_central"] = 1.0 if region == "North Central" else 0.0
     features["region_south"] = 1.0 if region == "South" else 0.0
     features["region_west"] = 1.0 if region == "West" else 0.0
 
-    features["afqt_score"] = st.sidebar.slider("AFQT Score (normalized)", -2.0, 2.0, 0.0, 0.1)
+    features["afqt_score"] = st.sidebar.slider(
+        "AFQT Score (normalized)",
+        -2.0,
+        2.0,
+        0.0,
+        0.1,
+    )
     features["afqt_available"] = 1.0
-    features["cohort"] = st.sidebar.selectbox("Cohort", [0.0, 1.0], format_func=lambda x: "NLSY79" if x == 0 else "NLSY97")
+
+    def _cohort_label(x: float) -> str:
+        return "NLSY79" if x == 0 else "NLSY97"
+
+    features["cohort"] = st.sidebar.selectbox(
+        "Cohort",
+        [0.0, 1.0],
+        format_func=_cohort_label,
+    )
 
     return features
 
@@ -95,20 +140,43 @@ def _show_deterministic(features: dict[str, float]) -> None:
     ages = [t["age"] for t in traj]
     incomes = [t["income"] for t in traj]
     satisfaction = [t["satisfaction"] for t in traj]
-    states = [t["life_state"] for t in traj]
+    [t["life_state"] for t in traj]
 
     col1, col2 = st.columns(2)
 
     with col1:
         fig = go.Figure()
-        fig.add_trace(go.Scatter(x=ages, y=incomes, name="Income", line=dict(color="steelblue")))
-        fig.update_layout(title="Income Trajectory", xaxis_title="Age", yaxis_title="Income ($)")
+        fig.add_trace(
+            go.Scatter(
+                x=ages,
+                y=incomes,
+                name="Income",
+                line=dict(color="steelblue"),
+            )
+        )
+        fig.update_layout(
+            title="Income Trajectory",
+            xaxis_title="Age",
+            yaxis_title="Income ($)",
+        )
         st.plotly_chart(fig, use_container_width=True)
 
     with col2:
         fig = go.Figure()
-        fig.add_trace(go.Scatter(x=ages, y=satisfaction, name="Satisfaction", line=dict(color="coral")))
-        fig.update_layout(title="Life Satisfaction", xaxis_title="Age", yaxis_title="Satisfaction", yaxis_range=[0, 1])
+        fig.add_trace(
+            go.Scatter(
+                x=ages,
+                y=satisfaction,
+                name="Satisfaction",
+                line=dict(color="coral"),
+            )
+        )
+        fig.update_layout(
+            title="Life Satisfaction",
+            xaxis_title="Age",
+            yaxis_title="Satisfaction",
+            yaxis_range=[0, 1],
+        )
         st.plotly_chart(fig, use_container_width=True)
 
     st.subheader(f"Archetype: {data['archetype_id']}")
@@ -134,14 +202,58 @@ def _show_monte_carlo(features: dict[str, float]) -> None:
     data = resp.json()
     bands = data["percentile_bands"]
     ages = bands["age"]
+    inc = bands["income"]
 
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=ages, y=bands["income"]["p90"], fill=None, line=dict(color="lightblue"), name="P90"))
-    fig.add_trace(go.Scatter(x=ages, y=bands["income"]["p10"], fill="tonexty", line=dict(color="lightblue"), name="P10-P90"))
-    fig.add_trace(go.Scatter(x=ages, y=bands["income"]["p75"], fill=None, line=dict(color="steelblue", dash="dash"), name="P75"))
-    fig.add_trace(go.Scatter(x=ages, y=bands["income"]["p25"], fill="tonexty", line=dict(color="steelblue", dash="dash"), name="P25-P75"))
-    fig.add_trace(go.Scatter(x=ages, y=bands["income"]["p50"], line=dict(color="darkblue", width=2), name="Median"))
-    fig.update_layout(title="Income Forecast (Monte Carlo)", xaxis_title="Age", yaxis_title="Income ($)")
+    fig.add_trace(
+        go.Scatter(
+            x=ages,
+            y=inc["p90"],
+            fill=None,
+            line=dict(color="lightblue"),
+            name="P90",
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=ages,
+            y=inc["p10"],
+            fill="tonexty",
+            line=dict(color="lightblue"),
+            name="P10-P90",
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=ages,
+            y=inc["p75"],
+            fill=None,
+            line=dict(color="steelblue", dash="dash"),
+            name="P75",
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=ages,
+            y=inc["p25"],
+            fill="tonexty",
+            line=dict(color="steelblue", dash="dash"),
+            name="P25-P75",
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=ages,
+            y=inc["p50"],
+            line=dict(color="darkblue", width=2),
+            name="Median",
+        )
+    )
+    fig.update_layout(
+        title="Income Forecast (Monte Carlo)",
+        xaxis_title="Age",
+        yaxis_title="Income ($)",
+    )
     st.plotly_chart(fig, use_container_width=True)
 
 
@@ -156,16 +268,25 @@ def _archetype_gallery() -> None:
             return
 
     data = resp.json()
-    st.subheader(f"Discovered {data['k_selected']} Archetypes ({data['total_individuals']} individuals)")
+    k = data["k_selected"]
+    n = data["total_individuals"]
+    st.subheader(f"Discovered {k} Archetypes ({n} individuals)")
 
     for arch in data["archetypes"]:
-        with st.expander(f"Archetype {arch['id']} — {arch['dominant_life_state']} ({arch['prevalence']:.1%})"):
+        dominant = arch["dominant_life_state"]
+        prevalence = arch["prevalence"]
+        label = f"Archetype {arch['id']} — {dominant} ({prevalence:.1%})"
+        with st.expander(label):
             st.write(f"**Members:** {arch['member_count']}")
-            st.write(f"**Peak Income:** ${arch['median_peak_income']:,.0f}")
+            st.write(
+                f"**Peak Income:** ${arch['median_peak_income']:,.0f}",
+            )
 
-            # Load canonical trajectory
             try:
-                traj_resp = httpx.get(f"{API_URL}/archetypes/{arch['id']}/trajectory", timeout=10.0)
+                traj_resp = httpx.get(
+                    f"{API_URL}/archetypes/{arch['id']}/trajectory",
+                    timeout=10.0,
+                )
                 traj_resp.raise_for_status()
                 traj_data = traj_resp.json()
                 traj = traj_data["canonical_trajectory"]
@@ -174,8 +295,18 @@ def _archetype_gallery() -> None:
                 incomes = [t["income"] for t in traj]
 
                 fig = go.Figure()
-                fig.add_trace(go.Scatter(x=ages, y=incomes, name="Income"))
-                fig.update_layout(title=f"Archetype {arch['id']} Canonical Trajectory", xaxis_title="Age", yaxis_title="Log Income")
+                fig.add_trace(
+                    go.Scatter(
+                        x=ages,
+                        y=incomes,
+                        name="Income",
+                    )
+                )
+                fig.update_layout(
+                    title=f"Archetype {arch['id']} Canonical Trajectory",
+                    xaxis_title="Age",
+                    yaxis_title="Log Income",
+                )
                 st.plotly_chart(fig, use_container_width=True)
             except httpx.HTTPError:
                 st.warning("Could not load trajectory")
@@ -186,12 +317,32 @@ def _what_if_analysis() -> None:
     features = _get_feature_inputs()
 
     st.sidebar.header("Perturbation")
-    perturb_var = st.sidebar.selectbox("Variable to Perturb", [
-        "birth_year", "parent_education", "family_income_14",
-        "afqt_score", "sex", "cohort",
-    ])
-    perturb_val = st.sidebar.slider("New Value", -3.0, 3.0, 1.0, 0.1)
-    n_sim = st.sidebar.slider("Simulations", 100, 10000, 1000, 100, key="whatif_nsim")
+    perturb_var = st.sidebar.selectbox(
+        "Variable to Perturb",
+        [
+            "birth_year",
+            "parent_education",
+            "family_income_14",
+            "afqt_score",
+            "sex",
+            "cohort",
+        ],
+    )
+    perturb_val = st.sidebar.slider(
+        "New Value",
+        -3.0,
+        3.0,
+        1.0,
+        0.1,
+    )
+    n_sim = st.sidebar.slider(
+        "Simulations",
+        100,
+        10000,
+        1000,
+        100,
+        key="whatif_nsim",
+    )
 
     if st.sidebar.button("Analyze"):
         with st.spinner("Running counterfactual analysis..."):
@@ -221,24 +372,53 @@ def _what_if_analysis() -> None:
 
         with col1:
             fig = go.Figure()
-            fig.add_trace(go.Bar(x=ages, y=income_deltas, name="Income Delta"))
-            fig.update_layout(title=f"Income Impact of {perturb_var}={perturb_val}", xaxis_title="Age", yaxis_title="Delta ($)")
+            fig.add_trace(
+                go.Bar(
+                    x=ages,
+                    y=income_deltas,
+                    name="Income Delta",
+                )
+            )
+            fig.update_layout(
+                title=f"Income Impact of {perturb_var}={perturb_val}",
+                xaxis_title="Age",
+                yaxis_title="Delta ($)",
+            )
             st.plotly_chart(fig, use_container_width=True)
 
         with col2:
             fig = go.Figure()
-            fig.add_trace(go.Bar(x=ages, y=satis_deltas, name="Satisfaction Delta", marker_color="coral"))
-            fig.update_layout(title=f"Satisfaction Impact", xaxis_title="Age", yaxis_title="Delta")
+            fig.add_trace(
+                go.Bar(
+                    x=ages,
+                    y=satis_deltas,
+                    name="Satisfaction Delta",
+                    marker_color="coral",
+                )
+            )
+            fig.update_layout(
+                title="Satisfaction Impact",
+                xaxis_title="Age",
+                yaxis_title="Delta",
+            )
             st.plotly_chart(fig, use_container_width=True)
 
         st.subheader("Inflection Points")
         for ip in data["inflection_points"]:
-            st.write(f"**Age {ip['age']}**: Income delta ${ip['delta_income']:,.0f}, "
-                     f"Satisfaction delta {ip['delta_satisfaction']:.3f} "
-                     f"(significance: {ip['significance']:.2f})")
+            st.write(
+                f"**Age {ip['age']}**: "
+                f"Income delta ${ip['delta_income']:,.0f}, "
+                f"Satisfaction delta {ip['delta_satisfaction']:.3f} "
+                f"(significance: {ip['significance']:.2f})",
+            )
 
-        st.metric("Overall Effect Size", f"${data['overall_effect_size']:,.0f}")
-        st.write(f"Archetype shift: {data['base_archetype']} → {data['perturbed_archetype']}")
+        st.metric(
+            "Overall Effect Size",
+            f"${data['overall_effect_size']:,.0f}",
+        )
+        st.write(
+            f"Archetype shift: {data['base_archetype']} → {data['perturbed_archetype']}",
+        )
 
 
 if __name__ == "__main__":

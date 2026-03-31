@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import torch
 import torch.nn as nn
 
-from fata_cognita.config import ModelConfig
+if TYPE_CHECKING:
+    from fata_cognita.config import ModelConfig
 
 
 class Encoder(nn.Module):
@@ -28,12 +31,14 @@ class Encoder(nn.Module):
         layers: list[nn.Module] = []
         in_dim = num_features
         for hidden_dim in config.encoder_hidden_dims:
-            layers.extend([
-                nn.Linear(in_dim, hidden_dim),
-                nn.LayerNorm(hidden_dim),
-                nn.ReLU(),
-                nn.Dropout(config.dropout),
-            ])
+            layers.extend(
+                [
+                    nn.Linear(in_dim, hidden_dim),
+                    nn.LayerNorm(hidden_dim),
+                    nn.ReLU(),
+                    nn.Dropout(config.dropout),
+                ]
+            )
             in_dim = hidden_dim
 
         self.hidden = nn.Sequential(*layers)

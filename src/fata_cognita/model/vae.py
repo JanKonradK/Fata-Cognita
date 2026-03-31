@@ -5,12 +5,16 @@ Combines all model components into a single module for training and inference.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import torch
 import torch.nn as nn
 
-from fata_cognita.config import Config, ModelConfig
 from fata_cognita.model.decoder import TrajectoryDecoder
 from fata_cognita.model.encoder import Encoder
+
+if TYPE_CHECKING:
+    from fata_cognita.config import Config, ModelConfig
 
 
 class TrajectoryVAE(nn.Module):
@@ -96,9 +100,7 @@ class TrajectoryVAE(nn.Module):
         """
         return self.encoder(static_features)
 
-    def decode(
-        self, z: torch.Tensor, seq_len: int | None = None
-    ) -> dict[str, torch.Tensor]:
+    def decode(self, z: torch.Tensor, seq_len: int | None = None) -> dict[str, torch.Tensor]:
         """Decode a latent vector into a trajectory.
 
         Args:

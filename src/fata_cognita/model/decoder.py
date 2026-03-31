@@ -7,10 +7,13 @@ and satisfaction.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import torch
 import torch.nn as nn
 
-from fata_cognita.config import ModelConfig
+if TYPE_CHECKING:
+    from fata_cognita.config import ModelConfig
 
 
 class TrajectoryDecoder(nn.Module):
@@ -85,9 +88,7 @@ class TrajectoryDecoder(nn.Module):
             )
         return self._causal_mask.to(device)
 
-    def forward(
-        self, z: torch.Tensor, seq_len: int | None = None
-    ) -> dict[str, torch.Tensor]:
+    def forward(self, z: torch.Tensor, seq_len: int | None = None) -> dict[str, torch.Tensor]:
         """Decode latent vector z into a full trajectory.
 
         Args:

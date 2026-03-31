@@ -3,15 +3,19 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 import numpy as np
 import torch
 import torch.nn.functional as F
-from sklearn.mixture import GaussianMixture
 
-from fata_cognita.data.scaler import FeatureScaler
 from fata_cognita.data.synthetic import LifeState
-from fata_cognita.model.vae import TrajectoryVAE
+
+if TYPE_CHECKING:
+    from sklearn.mixture import GaussianMixture
+
+    from fata_cognita.data.scaler import FeatureScaler
+    from fata_cognita.model.vae import TrajectoryVAE
 
 
 @dataclass
@@ -96,13 +100,15 @@ def predict_trajectory(
         state_idx = int(logits[t].argmax())
         state_prob_dict = {state_names[c]: float(probs[t, c]) for c in range(len(state_names))}
 
-        trajectory.append(TrajectoryPoint(
-            age=age,
-            life_state=state_names[state_idx],
-            life_state_probs=state_prob_dict,
-            income=float(np.expm1(max(0.0, income_original[t].item()))),
-            satisfaction=float(satisfaction[t].item()),
-        ))
+        trajectory.append(
+            TrajectoryPoint(
+                age=age,
+                life_state=state_names[state_idx],
+                life_state_probs=state_prob_dict,
+                income=float(np.expm1(max(0.0, income_original[t].item()))),
+                satisfaction=float(satisfaction[t].item()),
+            )
+        )
 
     return PredictionResult(
         trajectory=trajectory,

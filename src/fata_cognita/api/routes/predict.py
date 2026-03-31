@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Request
 
-from fata_cognita.api.deps import get_gmm, get_model, get_scaler
 from fata_cognita.api.schemas.predict import PredictRequest, PredictResponse, TrajectoryPointSchema
 from fata_cognita.inference.predictor import predict_trajectory
 

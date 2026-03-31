@@ -8,9 +8,7 @@ from pydantic import BaseModel, Field
 class SimulateRequest(BaseModel):
     """Request body for Monte Carlo simulation."""
 
-    static_features: dict[str, float] = Field(
-        ..., description="Mapping of feature names to values"
-    )
+    static_features: dict[str, float] = Field(..., description="Mapping of feature names to values")
     n_simulations: int = Field(
         1000, ge=100, le=10000, description="Number of trajectories to sample"
     )

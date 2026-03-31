@@ -6,11 +6,15 @@ aligned by age, with padding and observation masks.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import numpy as np
-import pandas as pd
 import torch
 
-from fata_cognita.config import DataConfig
+if TYPE_CHECKING:
+    import pandas as pd
+
+    from fata_cognita.config import DataConfig
 
 
 def build_sequences(
@@ -112,6 +116,6 @@ def split_by_caseid(
 
     return {
         "train": indices[:n_train].tolist(),
-        "val": indices[n_train:n_train + n_val].tolist(),
-        "test": indices[n_train + n_val:].tolist(),
+        "val": indices[n_train : n_train + n_val].tolist(),
+        "test": indices[n_train + n_val :].tolist(),
     }

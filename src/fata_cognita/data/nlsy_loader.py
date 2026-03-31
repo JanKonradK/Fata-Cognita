@@ -15,12 +15,12 @@ MISSING_SENTINELS = {-1, -2, -3, -4, -5}
 
 # Round-to-year mappings
 NLSY79_ROUND_YEARS: dict[int, int] = {
-    **{r: 1978 + r for r in range(1, 17)},       # rounds 1-16: 1979-1994 (annual)
+    **{r: 1978 + r for r in range(1, 17)},  # rounds 1-16: 1979-1994 (annual)
     **{r: 1994 + (r - 16) * 2 for r in range(17, 31)},  # rounds 17-30: 1996-2022 (biennial)
 }
 
 NLSY97_ROUND_YEARS: dict[int, int] = {
-    **{r: 1996 + r for r in range(1, 16)},        # rounds 1-15: 1997-2011 (annual)
+    **{r: 1996 + r for r in range(1, 16)},  # rounds 1-15: 1997-2011 (annual)
     **{r: 2011 + (r - 15) * 2 for r in range(16, 21)},  # rounds 16-20: 2013-2021 (biennial)
 }
 
@@ -127,9 +127,7 @@ def wide_to_long(
     return _reshape_by_pattern(df, round_years)
 
 
-def _reshape_by_pattern(
-    df: pd.DataFrame, round_years: dict[int, int]
-) -> pd.DataFrame:
+def _reshape_by_pattern(df: pd.DataFrame, round_years: dict[int, int]) -> pd.DataFrame:
     """Reshape by detecting ``VARNAME.ROUND`` column patterns.
 
     Args:

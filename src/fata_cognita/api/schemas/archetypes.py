@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pydantic import BaseModel
 
-from fata_cognita.api.schemas.predict import TrajectoryPointSchema
+from fata_cognita.api.schemas.predict import TrajectoryPointSchema  # noqa: TC001
 
 
 class ArchetypeSummary(BaseModel):

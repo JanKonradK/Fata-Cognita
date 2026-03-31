@@ -8,9 +8,7 @@ from pydantic import BaseModel, Field
 class PredictRequest(BaseModel):
     """Request body for trajectory prediction."""
 
-    static_features: dict[str, float] = Field(
-        ..., description="Mapping of feature names to values"
-    )
+    static_features: dict[str, float] = Field(..., description="Mapping of feature names to values")
     deterministic: bool = Field(
         True, description="Use deterministic (mu) or stochastic (sampled) prediction"
     )

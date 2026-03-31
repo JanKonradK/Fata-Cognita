@@ -28,8 +28,16 @@ class LifeState(IntEnum):
 # CPI-U annual averages for deflating to 2022 dollars (selected years)
 _CPI_2022 = 292.655
 _CPI_TABLE: dict[int, float] = {
-    1979: 72.6, 1980: 82.4, 1985: 107.6, 1990: 130.7, 1995: 152.4,
-    2000: 172.2, 2005: 195.3, 2010: 218.1, 2015: 237.0, 2020: 258.8,
+    1979: 72.6,
+    1980: 82.4,
+    1985: 107.6,
+    1990: 130.7,
+    1995: 152.4,
+    2000: 172.2,
+    2005: 195.3,
+    2010: 218.1,
+    2015: 237.0,
+    2020: 258.8,
     2022: 292.655,
 }
 
@@ -120,7 +128,7 @@ def _is_missing(val: float | None) -> bool:
         return True
     try:
         return np.isnan(val)
-    except (TypeError, ValueError):
+    except TypeError, ValueError:
         return False
 
 

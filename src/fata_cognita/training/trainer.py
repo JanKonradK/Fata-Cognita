@@ -4,23 +4,26 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import torch
 import torch.nn as nn
 from torch.optim import AdamW
 from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
-from torch.utils.data import DataLoader
 
-from fata_cognita.config import Config
 from fata_cognita.model.beta_schedule import CyclicalBetaSchedule
 from fata_cognita.model.loss import LossComponents, MultiTaskLoss
-from fata_cognita.model.vae import TrajectoryVAE
 from fata_cognita.training.callbacks import EarlyStopping, TrainingLog
 from fata_cognita.training.metrics import (
     compute_accuracy,
-    compute_f1_macro,
     compute_mae,
 )
+
+if TYPE_CHECKING:
+    from torch.utils.data import DataLoader
+
+    from fata_cognita.config import Config
+    from fata_cognita.model.vae import TrajectoryVAE
 
 logger = logging.getLogger(__name__)
 
@@ -55,9 +58,7 @@ class Trainer:
             weight_decay=self.train_cfg.weight_decay,
         )
 
-        self.scheduler = CosineAnnealingWarmRestarts(
-            self.optimizer, T_0=25, T_mult=2, eta_min=1e-6
-        )
+        self.scheduler = CosineAnnealingWarmRestarts(self.optimizer, T_0=25, T_mult=2, eta_min=1e-6)
 
         self.early_stopping = EarlyStopping(patience=self.train_cfg.patience)
         self.log = TrainingLog()
@@ -162,9 +163,7 @@ class Trainer:
             )
 
             loss_result.total.backward()
-            nn.utils.clip_grad_norm_(
-                self.model.parameters(), self.train_cfg.grad_clip_norm
-            )
+            nn.utils.clip_grad_norm_(self.model.parameters(), self.train_cfg.grad_clip_norm)
             self.optimizer.step()
             beta_schedule.step()
 
@@ -219,9 +218,7 @@ class Trainer:
             total_acc += compute_accuracy(
                 outputs["life_state_logits"], batch["life_states"], batch["masks"]
             )
-            total_income_mae += compute_mae(
-                outputs["income"], batch["income"], batch["masks"]
-            )
+            total_income_mae += compute_mae(outputs["income"], batch["income"], batch["masks"])
             total_satis_mae += compute_mae(
                 outputs["satisfaction"], batch["satisfaction"], batch["masks"]
             )

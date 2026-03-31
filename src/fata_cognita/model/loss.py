@@ -110,15 +110,16 @@ class MultiTaskLoss(nn.Module):
         precision_satis = torch.exp(-self.log_var_satis)
 
         recon_loss = (
-            0.5 * precision_state * ce_loss + 0.5 * self.log_var_state
-            + 0.5 * precision_income * huber_loss + 0.5 * self.log_var_income
-            + 0.5 * precision_satis * mse_loss + 0.5 * self.log_var_satis
+            0.5 * precision_state * ce_loss
+            + 0.5 * self.log_var_state
+            + 0.5 * precision_income * huber_loss
+            + 0.5 * self.log_var_income
+            + 0.5 * precision_satis * mse_loss
+            + 0.5 * self.log_var_satis
         )
 
         # KL divergence: -0.5 * sum(1 + log_var - mu^2 - exp(log_var))
-        kl_loss = -0.5 * torch.mean(
-            torch.sum(1 + log_var - mu.pow(2) - log_var.exp(), dim=1)
-        )
+        kl_loss = -0.5 * torch.mean(torch.sum(1 + log_var - mu.pow(2) - log_var.exp(), dim=1))
 
         total = recon_loss + beta * kl_loss
 

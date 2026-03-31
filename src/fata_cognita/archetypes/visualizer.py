@@ -3,10 +3,13 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import matplotlib
 import matplotlib.pyplot as plt
-import numpy as np
+
+if TYPE_CHECKING:
+    import numpy as np
 
 matplotlib.use("Agg")  # non-interactive backend
 
@@ -40,8 +43,12 @@ def plot_latent_space(
 
     fig, ax = plt.subplots(figsize=(10, 8))
     scatter = ax.scatter(
-        z_2d[:, 0], z_2d[:, 1],
-        c=labels, cmap="tab10", alpha=0.6, s=10,
+        z_2d[:, 0],
+        z_2d[:, 1],
+        c=labels,
+        cmap="tab10",
+        alpha=0.6,
+        s=10,
     )
     plt.colorbar(scatter, ax=ax, label="Archetype")
     ax.set_title(f"Latent Space ({method.upper()})")

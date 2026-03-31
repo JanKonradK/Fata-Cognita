@@ -8,18 +8,10 @@ from pydantic import BaseModel, Field
 class InflectionRequest(BaseModel):
     """Request body for inflection-point analysis."""
 
-    static_features: dict[str, float] = Field(
-        ..., description="Base person features"
-    )
-    perturb_variable: str = Field(
-        ..., description="Feature name to perturb"
-    )
-    perturb_value: float = Field(
-        ..., description="New value for the perturbed feature"
-    )
-    n_simulations: int = Field(
-        10000, ge=100, le=50000, description="MC trajectories per scenario"
-    )
+    static_features: dict[str, float] = Field(..., description="Base person features")
+    perturb_variable: str = Field(..., description="Feature name to perturb")
+    perturb_value: float = Field(..., description="New value for the perturbed feature")
+    n_simulations: int = Field(10000, ge=100, le=50000, description="MC trajectories per scenario")
 
 
 class InflectionPointSchema(BaseModel):

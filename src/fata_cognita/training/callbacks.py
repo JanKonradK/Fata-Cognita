@@ -58,8 +58,15 @@ class TrainingLog:
         logger.info(
             "Epoch %3d | train_loss=%.4f | val_loss=%.4f | acc=%.3f | "
             "income_mae=%.4f | satis_mae=%.4f | kl=%.4f | beta=%.3f | lr=%.2e",
-            epoch, train_loss, val_loss, accuracy,
-            income_mae, satis_mae, kl, beta, lr,
+            epoch,
+            train_loss,
+            val_loss,
+            accuracy,
+            income_mae,
+            satis_mae,
+            kl,
+            beta,
+            lr,
         )
 
 
@@ -93,7 +100,10 @@ class EarlyStopping:
 
         self.counter += 1
         if self.counter >= self.patience:
-            logger.info("Early stopping triggered after %d epochs without improvement", self.counter)
+            logger.info(
+                "Early stopping triggered after %d epochs without improvement",
+                self.counter,
+            )
             return True
         return False
 

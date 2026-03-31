@@ -3,14 +3,17 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 import numpy as np
 import torch
 import torch.nn.functional as F
 
-from fata_cognita.data.scaler import FeatureScaler
 from fata_cognita.data.synthetic import LifeState
-from fata_cognita.model.vae import TrajectoryVAE
+
+if TYPE_CHECKING:
+    from fata_cognita.data.scaler import FeatureScaler
+    from fata_cognita.model.vae import TrajectoryVAE
 
 
 @dataclass

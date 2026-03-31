@@ -19,9 +19,7 @@ class CyclicalBetaSchedule:
         ratio: Fraction of each cycle spent ramping up (0 < ratio <= 1).
     """
 
-    def __init__(
-        self, total_steps: int, n_cycles: int = 4, ratio: float = 0.5
-    ) -> None:
+    def __init__(self, total_steps: int, n_cycles: int = 4, ratio: float = 0.5) -> None:
         if total_steps <= 0:
             raise ValueError("total_steps must be positive")
         if n_cycles <= 0:

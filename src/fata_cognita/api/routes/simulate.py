@@ -32,6 +32,7 @@ def simulate(body: SimulateRequest, request: Request) -> SimulateResponse:
 
     # Assign archetype
     import torch
+
     x = torch.tensor(
         [[body.static_features.get(n, 0.0) for n in state.feature_names]],
         dtype=torch.float32,
