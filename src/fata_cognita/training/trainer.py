@@ -58,7 +58,12 @@ class Trainer:
             weight_decay=self.train_cfg.weight_decay,
         )
 
-        self.scheduler = CosineAnnealingWarmRestarts(self.optimizer, T_0=25, T_mult=2, eta_min=1e-6)
+        self.scheduler = CosineAnnealingWarmRestarts(
+            self.optimizer,
+            T_0=self.train_cfg.scheduler_t0,
+            T_mult=self.train_cfg.scheduler_t_mult,
+            eta_min=self.train_cfg.scheduler_eta_min,
+        )
 
         self.early_stopping = EarlyStopping(patience=self.train_cfg.patience)
         self.log = TrainingLog()
