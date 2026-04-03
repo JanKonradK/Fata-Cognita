@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, Field
+import math
+
+from pydantic import BaseModel, Field, model_validator
 
 
 class PredictRequest(BaseModel):
@@ -12,6 +14,15 @@ class PredictRequest(BaseModel):
     deterministic: bool = Field(
         True, description="Use deterministic (mu) or stochastic (sampled) prediction"
     )
+
+    @model_validator(mode="after")
+    def validate_feature_values(self) -> PredictRequest:
+        """Ensure all feature values are finite numbers."""
+        for name, value in self.static_features.items():
+            if not math.isfinite(value):
+                msg = f"Feature '{name}' has non-finite value: {value}"
+                raise ValueError(msg)
+        return self
 
 
 class TrajectoryPointSchema(BaseModel):
