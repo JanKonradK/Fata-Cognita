@@ -5,6 +5,7 @@ data:
   processed_dir: data/processed
   tensor_dir: data/tensors
   max_seq_len: 62          # age 14-75 inclusive
+  min_age: 14
   num_life_states: 9
   train_fraction: 0.8
   val_fraction: 0.1
@@ -19,6 +20,8 @@ data:
   # Static feature names (after one-hot encoding)
   static_features:
     - sex
+    - race_white
+    - race_asian
     - race_hispanic
     - race_black
     - race_other
@@ -54,6 +57,9 @@ training:
   beta_ratio: 0.5
   seed: 42
   checkpoint_dir: checkpoints
+  scheduler_t0: 25
+  scheduler_t_mult: 2
+  scheduler_eta_min: 1.0e-6
 
 api:
   host: "0.0.0.0"
