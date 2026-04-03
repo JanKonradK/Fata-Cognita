@@ -24,7 +24,7 @@ def main() -> None:
     """Run training pipeline."""
     parser = argparse.ArgumentParser(description="Train the Fata Cognita trajectory model")
     parser.add_argument("--config", default="config/default.yaml", help="Path to config YAML")
-    parser.add_argument("--synthetic", action="store_true", default=True, help="Use synthetic data")
+    parser.add_argument("--synthetic", action="store_true", default=False, help="Use synthetic data")
     args = parser.parse_args()
 
     config = load_config(args.config)
