@@ -9,6 +9,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from fata_cognita.api.routes import archetypes, inflection, predict, simulate
+from fata_cognita.config import load_config
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator
@@ -46,10 +47,12 @@ def create_app(state: AppState | None = None) -> FastAPI:
     )
 
     # CORS
+    config = load_config()
+    cors_origins = config.api.cors_origins
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=True,
+        allow_origins=cors_origins,
+        allow_credentials=("*" not in cors_origins),
         allow_methods=["*"],
         allow_headers=["*"],
     )
