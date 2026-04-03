@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import torch
+from fastapi import HTTPException
 
 from fata_cognita.archetypes.extractor import load_gmm
 from fata_cognita.config import Config, load_config
@@ -88,19 +89,22 @@ def get_state() -> AppState:
 def get_model(request: Request) -> TrajectoryVAE:
     """FastAPI dependency: get the VAE model."""
     state: AppState = request.app.state.app_state
-    assert state.model is not None
+    if state.model is None:
+        raise HTTPException(status_code=503, detail="Model not loaded")
     return state.model
 
 
 def get_gmm(request: Request) -> GaussianMixture:
     """FastAPI dependency: get the fitted GMM."""
     state: AppState = request.app.state.app_state
-    assert state.gmm is not None
+    if state.gmm is None:
+        raise HTTPException(status_code=503, detail="GMM not loaded")
     return state.gmm
 
 
 def get_scaler(request: Request) -> FeatureScaler:
     """FastAPI dependency: get the feature scaler."""
     state: AppState = request.app.state.app_state
-    assert state.scaler is not None
+    if state.scaler is None:
+        raise HTTPException(status_code=503, detail="Scaler not loaded")
     return state.scaler
