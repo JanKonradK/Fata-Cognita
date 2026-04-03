@@ -128,7 +128,7 @@ def _is_missing(val: float | None) -> bool:
         return True
     try:
         return np.isnan(val)
-    except TypeError, ValueError:
+    except (TypeError, ValueError):  # fmt: skip
         return False
 
 
