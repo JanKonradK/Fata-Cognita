@@ -45,14 +45,14 @@ class FeatureScaler:
         """
         if self.fit_static and static_features is not None:
             self._static_scaler = StandardScaler()
-            self._static_scaler.fit(static_features.numpy())
+            self._static_scaler.fit(static_features.detach().cpu().numpy())
 
         if self.fit_income and income is not None:
             self._income_scaler = StandardScaler()
             if masks is not None:
-                observed = income[masks].numpy().reshape(-1, 1)
+                observed = income[masks].detach().cpu().numpy().reshape(-1, 1)
             else:
-                observed = income.numpy().reshape(-1, 1)
+                observed = income.detach().cpu().numpy().reshape(-1, 1)
             self._income_scaler.fit(observed)
 
     def transform_static(self, static_features: torch.Tensor) -> torch.Tensor:
@@ -66,7 +66,7 @@ class FeatureScaler:
         """
         if self._static_scaler is None:
             return static_features
-        scaled = self._static_scaler.transform(static_features.numpy())
+        scaled = self._static_scaler.transform(static_features.detach().cpu().numpy())
         return torch.from_numpy(scaled.astype(np.float32))
 
     def transform_income(self, income: torch.Tensor) -> torch.Tensor:
@@ -81,7 +81,7 @@ class FeatureScaler:
         if self._income_scaler is None:
             return income
         shape = income.shape
-        flat = income.numpy().reshape(-1, 1)
+        flat = income.detach().cpu().numpy().reshape(-1, 1)
         scaled = self._income_scaler.transform(flat).reshape(shape)
         return torch.from_numpy(scaled.astype(np.float32))
 
