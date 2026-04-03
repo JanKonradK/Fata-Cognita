@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, Field
+import math
+
+from pydantic import BaseModel, Field, model_validator
 
 
 class SimulateRequest(BaseModel):
@@ -15,6 +17,15 @@ class SimulateRequest(BaseModel):
     percentiles: list[int] = Field(
         default=[10, 25, 50, 75, 90], description="Percentiles to compute"
     )
+
+    @model_validator(mode="after")
+    def validate_feature_values(self) -> SimulateRequest:
+        """Ensure all feature values are finite numbers."""
+        for name, value in self.static_features.items():
+            if not math.isfinite(value):
+                msg = f"Feature '{name}' has non-finite value: {value}"
+                raise ValueError(msg)
+        return self
 
 
 class PercentileBandsSchema(BaseModel):
