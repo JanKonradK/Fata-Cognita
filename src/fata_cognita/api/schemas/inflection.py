@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, Field
+import math
+
+from pydantic import BaseModel, Field, model_validator
 
 
 class InflectionRequest(BaseModel):
@@ -11,7 +13,19 @@ class InflectionRequest(BaseModel):
     static_features: dict[str, float] = Field(..., description="Base person features")
     perturb_variable: str = Field(..., description="Feature name to perturb")
     perturb_value: float = Field(..., description="New value for the perturbed feature")
-    n_simulations: int = Field(10000, ge=100, le=50000, description="MC trajectories per scenario")
+    n_simulations: int = Field(10000, ge=100, le=10000, description="MC trajectories per scenario")
+
+    @model_validator(mode="after")
+    def validate_feature_values(self) -> InflectionRequest:
+        """Ensure all feature values are finite numbers."""
+        for name, value in self.static_features.items():
+            if not math.isfinite(value):
+                msg = f"Feature '{name}' has non-finite value: {value}"
+                raise ValueError(msg)
+        if not math.isfinite(self.perturb_value):
+            msg = f"perturb_value must be finite, got {self.perturb_value}"
+            raise ValueError(msg)
+        return self
 
 
 class InflectionPointSchema(BaseModel):
