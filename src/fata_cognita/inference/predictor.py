@@ -5,11 +5,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-import numpy as np
 import torch
 import torch.nn.functional as F
 
 from fata_cognita.data.synthetic import LifeState
+from fata_cognita.inference.transforms import inverse_income_to_nominal
 
 if TYPE_CHECKING:
     from sklearn.mixture import GaussianMixture
@@ -82,8 +82,8 @@ def predict_trajectory(
     mu = outputs["mu"][0].cpu().numpy()  # (D,)
     z = outputs["z"][0].cpu().tolist()
 
-    # Inverse-scale income
-    income_original = scaler.inverse_income(income.unsqueeze(0).cpu())[0]
+    # Inverse-scale income and convert from log scale to nominal dollars
+    income_nominal = inverse_income_to_nominal(scaler.inverse_income(income.unsqueeze(0).cpu())[0])
 
     # Archetype assignment
     hard_label = int(gmm.predict(mu.reshape(1, -1))[0])
@@ -105,7 +105,7 @@ def predict_trajectory(
                 age=age,
                 life_state=state_names[state_idx],
                 life_state_probs=state_prob_dict,
-                income=float(np.expm1(max(0.0, income_original[t].item()))),
+                income=float(income_nominal[t].item()),
                 satisfaction=float(satisfaction[t].item()),
             )
         )

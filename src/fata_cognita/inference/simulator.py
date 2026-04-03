@@ -10,6 +10,7 @@ import torch
 import torch.nn.functional as F
 
 from fata_cognita.data.synthetic import LifeState
+from fata_cognita.inference.transforms import inverse_income_to_nominal
 
 if TYPE_CHECKING:
     from fata_cognita.data.scaler import FeatureScaler
@@ -83,9 +84,8 @@ def simulate_trajectories(
     ages = list(range(min_age, min_age + seq_len))
     state_names = [s.name for s in LifeState]
 
-    # Income: inverse-scale and expm1
-    income_all = scaler.inverse_income(outputs["income"].cpu())
-    income_all = np.expm1(np.maximum(income_all.numpy(), 0.0))
+    # Income: inverse-scale and convert from log scale to nominal dollars
+    income_all = inverse_income_to_nominal(scaler.inverse_income(outputs["income"].cpu())).numpy()
 
     # Satisfaction
     satis_all = outputs["satisfaction"].cpu().numpy()
