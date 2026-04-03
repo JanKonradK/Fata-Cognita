@@ -5,7 +5,6 @@ Wraps scikit-learn scalers with save/load for reproducibility.
 
 from __future__ import annotations
 
-import pickle
 from pathlib import Path
 
 import numpy as np
@@ -102,35 +101,58 @@ class FeatureScaler:
         return torch.from_numpy(original.astype(np.float32))
 
     def save(self, path: str | Path) -> None:
-        """Save fitted scalers to a pickle file.
+        """Save fitted scalers to a safe NumPy .npz file.
 
         Args:
             path: Output file path.
         """
         path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
-        state = {
-            "static_scaler": self._static_scaler,
-            "income_scaler": self._income_scaler,
-            "fit_static": self.fit_static,
-            "fit_income": self.fit_income,
+        arrays: dict[str, np.ndarray] = {
+            "fit_static": np.array(self.fit_static),
+            "fit_income": np.array(self.fit_income),
         }
-        with open(path, "wb") as f:
-            pickle.dump(state, f)
+        if self._static_scaler is not None:
+            arrays["static_mean"] = self._static_scaler.mean_
+            arrays["static_var"] = self._static_scaler.var_
+            arrays["static_scale"] = self._static_scaler.scale_
+            arrays["static_n_samples"] = np.array(self._static_scaler.n_samples_seen_)
+        if self._income_scaler is not None:
+            arrays["income_mean"] = self._income_scaler.mean_
+            arrays["income_var"] = self._income_scaler.var_
+            arrays["income_scale"] = self._income_scaler.scale_
+            arrays["income_n_samples"] = np.array(self._income_scaler.n_samples_seen_)
+        np.savez(path, **arrays)
 
     @classmethod
     def load(cls, path: str | Path) -> FeatureScaler:
-        """Load a previously saved FeatureScaler.
+        """Load a previously saved FeatureScaler from a NumPy .npz file.
 
         Args:
-            path: Path to the pickle file.
+            path: Path to the .npz file.
 
         Returns:
             FeatureScaler with restored state.
         """
-        with open(path, "rb") as f:
-            state = pickle.load(f)  # noqa: S301
-        scaler = cls(fit_static=state["fit_static"], fit_income=state["fit_income"])
-        scaler._static_scaler = state["static_scaler"]
-        scaler._income_scaler = state["income_scaler"]
+        data = np.load(path, allow_pickle=False)
+        scaler = cls(
+            fit_static=bool(data["fit_static"]),
+            fit_income=bool(data["fit_income"]),
+        )
+        if "static_mean" in data:
+            ss = StandardScaler()
+            ss.mean_ = data["static_mean"]
+            ss.var_ = data["static_var"]
+            ss.scale_ = data["static_scale"]
+            ss.n_samples_seen_ = data["static_n_samples"]
+            ss.n_features_in_ = len(ss.mean_)
+            scaler._static_scaler = ss
+        if "income_mean" in data:
+            ss = StandardScaler()
+            ss.mean_ = data["income_mean"]
+            ss.var_ = data["income_var"]
+            ss.scale_ = data["income_scale"]
+            ss.n_samples_seen_ = data["income_n_samples"]
+            ss.n_features_in_ = len(ss.mean_)
+            scaler._income_scaler = ss
         return scaler

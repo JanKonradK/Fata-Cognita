@@ -66,8 +66,8 @@ api:
   port: 8000
   cors_origins: ["*"]
   model_checkpoint: checkpoints/best_model.pt
-  gmm_path: checkpoints/gmm.pkl
-  scaler_path: checkpoints/scalers.pkl
+  gmm_path: checkpoints/gmm.npz
+  scaler_path: checkpoints/scalers.npz
   archetype_profiles_path: checkpoints/archetype_profiles.json
 
 dashboard:

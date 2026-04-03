@@ -101,8 +101,8 @@ class APIConfig:
     port: int = 8000
     cors_origins: list[str] = field(default_factory=lambda: ["*"])
     model_checkpoint: str = "checkpoints/best_model.pt"
-    gmm_path: str = "checkpoints/gmm.pkl"
-    scaler_path: str = "checkpoints/scalers.pkl"
+    gmm_path: str = "checkpoints/gmm.npz"
+    scaler_path: str = "checkpoints/scalers.npz"
     archetype_profiles_path: str = "checkpoints/archetype_profiles.json"
 
 

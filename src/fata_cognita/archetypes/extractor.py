@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-import pickle
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -108,7 +107,7 @@ def assign_archetypes(gmm: GaussianMixture, z: np.ndarray) -> tuple[np.ndarray, 
 
 
 def save_gmm(gmm: GaussianMixture, path: str | Path) -> None:
-    """Save a fitted GMM to disk.
+    """Save a fitted GMM to a safe NumPy .npz file.
 
     Args:
         gmm: Fitted GaussianMixture model.
@@ -116,18 +115,37 @@ def save_gmm(gmm: GaussianMixture, path: str | Path) -> None:
     """
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    with open(path, "wb") as f:
-        pickle.dump(gmm, f)
+    np.savez(
+        path,
+        weights=gmm.weights_,
+        means=gmm.means_,
+        covariances=gmm.covariances_,
+        precisions_cholesky=gmm.precisions_cholesky_,
+        n_components=np.array(gmm.n_components),
+        converged=np.array(gmm.converged_),
+        n_iter=np.array(gmm.n_iter_),
+        lower_bound=np.array(gmm.lower_bound_),
+    )
 
 
 def load_gmm(path: str | Path) -> GaussianMixture:
-    """Load a saved GMM from disk.
+    """Load a saved GMM from a safe NumPy .npz file.
 
     Args:
-        path: Path to the pickle file.
+        path: Path to the .npz file.
 
     Returns:
         Fitted GaussianMixture model.
     """
-    with open(path, "rb") as f:
-        return pickle.load(f)  # noqa: S301
+    data = np.load(path, allow_pickle=False)
+    n_components = int(data["n_components"])
+    gmm = GaussianMixture(n_components=n_components, covariance_type="full")
+    gmm.weights_ = data["weights"]
+    gmm.means_ = data["means"]
+    gmm.covariances_ = data["covariances"]
+    gmm.precisions_cholesky_ = data["precisions_cholesky"]
+    gmm.converged_ = bool(data["converged"])
+    gmm.n_iter_ = int(data["n_iter"])
+    gmm.lower_bound_ = float(data["lower_bound"])
+    gmm.n_features_in_ = gmm.means_.shape[1]
+    return gmm
