@@ -19,7 +19,7 @@ def main() -> None:
     """Run data preprocessing pipeline."""
     parser = argparse.ArgumentParser(description="Preprocess data for training")
     parser.add_argument("--config", default="config/default.yaml")
-    parser.add_argument("--synthetic", action="store_true", default=True)
+    parser.add_argument("--synthetic", action="store_true", default=False)
     args = parser.parse_args()
 
     config = load_config(args.config)
