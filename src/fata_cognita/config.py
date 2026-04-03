@@ -30,6 +30,7 @@ class DataConfig:
     processed_dir: str = "data/processed"
     tensor_dir: str = "data/tensors"
     max_seq_len: int = 62
+    min_age: int = 14
     num_life_states: int = 9
     train_fraction: float = 0.8
     val_fraction: float = 0.1
@@ -87,6 +88,9 @@ class TrainingConfig:
     beta_ratio: float = 0.5
     seed: int = 42
     checkpoint_dir: str = "checkpoints"
+    scheduler_t0: int = 25
+    scheduler_t_mult: int = 2
+    scheduler_eta_min: float = 1e-6
 
 
 @dataclass(frozen=True)

@@ -39,7 +39,7 @@ def build_sequences(
         Dictionary with tensors: life_states (N, S), income (N, S),
         satisfaction (N, S), masks (N, S), caseids (N,).
     """
-    min_age = 14
+    min_age = config.min_age
     max_age = min_age + config.max_seq_len - 1
     seq_len = config.max_seq_len
 
