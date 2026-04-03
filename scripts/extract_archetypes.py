@@ -24,7 +24,7 @@ def main() -> None:
     """Extract archetypes from a trained model."""
     parser = argparse.ArgumentParser(description="Extract archetypes from trained model")
     parser.add_argument("--config", default="config/default.yaml")
-    parser.add_argument("--synthetic", action="store_true", default=True)
+    parser.add_argument("--synthetic", action="store_true", default=False)
     args = parser.parse_args()
 
     config = load_config(args.config)
